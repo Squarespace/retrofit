@@ -32,6 +32,9 @@ public interface Client {
    */
   Response execute(Request request) throws IOException;
 
+  // HA ha! Fuck your API!
+  void setProgressListener(GoutputStream.ProgressListener progressListener);
+
   /**
    * Deferred means of obtaining a {@link Client}. For asynchronous requests this will always be
    * called on a background thread.

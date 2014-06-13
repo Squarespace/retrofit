@@ -17,6 +17,7 @@ package retrofit.android;
 
 import android.net.http.AndroidHttpClient;
 import retrofit.client.ApacheClient;
+import retrofit.client.GoutputStream;
 
 /**
  * Provides a {@link retrofit.client.Client} which uses the Android-specific version of
@@ -28,5 +29,10 @@ import retrofit.client.ApacheClient;
 public final class AndroidApacheClient extends ApacheClient {
   public AndroidApacheClient() {
     super(AndroidHttpClient.newInstance("Retrofit"));
+  }
+
+  @Override
+  public void setProgressListener(GoutputStream.ProgressListener progressListener) {
+
   }
 }

@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import retrofit.Profiler.RequestInformation;
 import retrofit.client.Client;
 import retrofit.client.Header;
+import retrofit.client.GoutputStream;
 import retrofit.client.Request;
 import retrofit.client.Response;
 import retrofit.converter.ConversionException;
@@ -157,11 +158,14 @@ public class RestAdapter {
   private final Profiler profiler;
   private RxSupport rxSupport;
 
+  private final GoutputStream.ProgressListener progressListener;
+
   volatile LogLevel logLevel;
 
   private RestAdapter(Endpoint server, Client.Provider clientProvider, Executor httpExecutor,
       Executor callbackExecutor, RequestInterceptor requestInterceptor, Converter converter,
-      Profiler profiler, ErrorHandler errorHandler, Log log, LogLevel logLevel) {
+      Profiler profiler, ErrorHandler errorHandler, Log log, LogLevel logLevel,
+      GoutputStream.ProgressListener progressListener) {
     this.server = server;
     this.clientProvider = clientProvider;
     this.httpExecutor = httpExecutor;
@@ -172,6 +176,7 @@ public class RestAdapter {
     this.errorHandler = errorHandler;
     this.log = log;
     this.logLevel = logLevel;
+    this.progressListener = progressListener;
   }
 
   /** Change the level of logging. */
@@ -318,7 +323,9 @@ public class RestAdapter {
         }
 
         long start = System.nanoTime();
-        Response response = clientProvider.get().execute(request);
+        Client client = clientProvider.get();
+        client.setProgressListener(progressListener);
+        Response response = client.execute(request);
         long elapsedTime = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
 
         int statusCode = response.getStatus();
@@ -536,6 +543,7 @@ public class RestAdapter {
     private ErrorHandler errorHandler;
     private Log log;
     private LogLevel logLevel = LogLevel.NONE;
+    private GoutputStream.ProgressListener progressListener;
 
     /** API endpoint URL. */
     public Builder setEndpoint(String endpoint) {
@@ -653,6 +661,11 @@ public class RestAdapter {
       return this;
     }
 
+    public Builder setProgressListener(GoutputStream.ProgressListener listener) {
+      progressListener = listener;
+      return this;
+    }
+
     /** Create the {@link RestAdapter} instances. */
     public RestAdapter build() {
       if (endpoint == null) {
@@ -660,7 +673,7 @@ public class RestAdapter {
       }
       ensureSaneDefaults();
       return new RestAdapter(endpoint, clientProvider, httpExecutor, callbackExecutor,
-          requestInterceptor, converter, profiler, errorHandler, log, logLevel);
+          requestInterceptor, converter, profiler, errorHandler, log, logLevel, progressListener);
     }
 
     private void ensureSaneDefaults() {

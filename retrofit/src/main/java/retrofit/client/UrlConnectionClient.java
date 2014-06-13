@@ -17,17 +17,22 @@ package retrofit.client;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import android.util.Log;
 import retrofit.mime.TypedInput;
 import retrofit.mime.TypedOutput;
 
 /** Retrofit client that uses {@link HttpURLConnection} for communication. */
 public class UrlConnectionClient implements Client {
   private static final int CHUNK_SIZE = 4096;
+
+  private GoutputStream.ProgressListener progressListener;
 
   public UrlConnectionClient() {
   }
@@ -36,6 +41,12 @@ public class UrlConnectionClient implements Client {
     HttpURLConnection connection = openConnection(request);
     prepareRequest(connection, request);
     return readResponse(connection);
+  }
+
+  @Override
+  public void setProgressListener(GoutputStream.ProgressListener progressListener) {
+    Log.e("#####", "Listener: " + progressListener);
+    this.progressListener = progressListener;
   }
 
   protected HttpURLConnection openConnection(Request request) throws IOException {
@@ -65,7 +76,15 @@ public class UrlConnectionClient implements Client {
       } else {
         connection.setChunkedStreamingMode(CHUNK_SIZE);
       }
-      body.writeTo(connection.getOutputStream());
+
+      OutputStream out;
+      if(progressListener != null) {
+        out = new GoutputStream(connection.getOutputStream(), progressListener);
+      } else {
+        out = connection.getOutputStream();
+      }
+
+      body.writeTo(out);
     }
   }
 

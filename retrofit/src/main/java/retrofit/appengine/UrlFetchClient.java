@@ -1,18 +1,21 @@
 package retrofit.appengine;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.appengine.api.urlfetch.HTTPHeader;
 import com.google.appengine.api.urlfetch.HTTPMethod;
 import com.google.appengine.api.urlfetch.HTTPRequest;
 import com.google.appengine.api.urlfetch.HTTPResponse;
 import com.google.appengine.api.urlfetch.URLFetchService;
 import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+
 import retrofit.client.Client;
 import retrofit.client.Header;
+import retrofit.client.GoutputStream;
 import retrofit.client.Request;
 import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
@@ -52,6 +55,11 @@ public class UrlFetchClient implements Client {
     HTTPRequest fetchRequest = createRequest(request);
     HTTPResponse fetchResponse = execute(urlFetchService, fetchRequest);
     return parseResponse(fetchResponse);
+  }
+
+  @Override
+  public void setProgressListener(GoutputStream.ProgressListener progressListener) {
+
   }
 
   /** Execute the specified {@code request} using the provided {@code urlFetchService}. */

@@ -66,6 +66,11 @@ public class ApacheClient implements Client {
     return parseResponse(request.getUrl(), apacheResponse);
   }
 
+  @Override
+  public void setProgressListener(GoutputStream.ProgressListener progressListener) {
+
+  }
+
   /** Execute the specified {@code request} using the provided {@code client}. */
   protected HttpResponse execute(HttpClient client, HttpUriRequest request) throws IOException {
     return client.execute(request);
