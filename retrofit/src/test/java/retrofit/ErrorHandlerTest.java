@@ -1,24 +1,27 @@
 // Copyright 2013 Square, Inc.
 package retrofit;
 
-import java.io.IOException;
-import java.util.Collections;
-import org.junit.Before;
-import org.junit.Test;
-import retrofit.client.Client;
-import retrofit.client.Header;
-import retrofit.client.Request;
-import retrofit.client.Response;
-import retrofit.http.GET;
-import rx.Observable;
-import rx.Observer;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+
+import java.io.IOException;
+import java.util.Collections;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import retrofit.client.Client;
+import retrofit.client.GoutputStream;
+import retrofit.client.Header;
+import retrofit.client.Request;
+import retrofit.client.Response;
+import retrofit.http.GET;
+import rx.Observable;
+import rx.Observer;
 
 public class ErrorHandlerTest {
 
@@ -40,6 +43,11 @@ public class ErrorHandlerTest {
   static class MockInvalidResponseClient implements Client {
     @Override public Response execute(Request request) throws IOException {
       return new Response("", 400, "invalid request", Collections.<Header>emptyList(), null);
+    }
+
+    @Override
+    public void setProgressListener(GoutputStream.ProgressListener progressListener) {
+
     }
   }
 
