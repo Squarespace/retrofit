@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import android.util.Log;
 import retrofit.mime.TypedInput;
 import retrofit.mime.TypedOutput;
 
@@ -45,7 +44,6 @@ public class UrlConnectionClient implements Client {
 
   @Override
   public void setProgressListener(GoutputStream.ProgressListener progressListener) {
-    Log.e("#####", "Listener: " + progressListener);
     this.progressListener = progressListener;
   }
 
